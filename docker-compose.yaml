@@ -1,8 +1,24 @@
 version: '3.7'
 services:
   server:
-    container_name: jamify-service-template
+    container_name: auth
     build:
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - "8121:8121"
+    restart: always
+    environment:
+      MONGODB_USERNAME: root
+      MONGODB_PASSWORD: password
+      MONGODB_PORT: 27017
+
+  ## mongo db service  
+  mongo-db:
+    container_name: auth_mongo-db
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+    ports:
+      - "27017:27017"

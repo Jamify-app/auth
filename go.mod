@@ -1,4 +1,4 @@
-module github.com/Jamify-app/jamify-service-template
+module github.com/Jamify-app/auth
 
 go 1.18
 

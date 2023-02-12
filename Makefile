@@ -1,5 +1,13 @@
-PROG = jamify-service-template
+PROG = auth
 COMPOSE = docker compose
+PORT = 8121
+MONGODB_USERNAME = root
+MONGODB_PASSWORD = passoword
+MONGODB_PORT = 27017
+ENV = PORT=$(PORT) \
+	  MONGODB_USERNAME=$(MONGODB_USERNAME) \
+	  MONGODB_PASSWORD=$(MONGODB_PASSWORD) \
+	  MONGODB_PORT=$(MONGODB_PORT)
 
 .PHONY: init
 init:
@@ -17,7 +25,7 @@ start:
 
 .PHONY: run
 run:
-	go run .
+	$(ENV) go run .
 
 .PHONY: clean
 clean:
