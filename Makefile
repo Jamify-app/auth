@@ -23,7 +23,6 @@ build:
 .PHONY: start
 start:
 	$(COMPOSE) -f $(COMPOSE_SERVICE) up --build -d
-	./$(PROG)
 
 .PHONY: platform
 platform:
@@ -35,13 +34,16 @@ run:
 
 .PHONY: clean
 clean:
-	$(COMPOSE) down
 	docker system prune -f
 	rm ./$(PROG)
 
 .PHONY: stop
 stop:
-	$(COMPOSE) down
+	$(COMPOSE) -f $(COMPOSE_SERVICE) down
+
+.PHONY: platform-stop
+platform-stop:
+	$(COMPOSE) -f $(COMPOSE_PLATFORM) down
 
 .PHONY: test
 test:

@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/Jamify-app/auth/encryption"
+	"github.com/Jamify-app/auth/common/encryption"
 	"github.com/Jamify-app/auth/processes/identities/models"
 )
 

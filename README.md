@@ -34,8 +34,3 @@ make run
 ``` shell
 make test
 ```
-
-5. Make clean will tear down everything, docker comtainers, builds, running services, and all. It will also clean any data stored in docker, and clean up any networks that were created.
-```shell
-make clean
-```
