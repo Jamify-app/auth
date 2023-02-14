@@ -7,6 +7,5 @@ import (
 )
 
 func RegisterRoutes(group *gin.RouterGroup, service services.IService) {
-	group.GET("", handlers.GetIdentities)
 	group.POST("", handlers.PostIdentities(service))
 }
