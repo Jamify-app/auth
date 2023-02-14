@@ -20,14 +20,3 @@ func NewRepository(store *mongo.Client) IRepository {
 		store: store,
 	}
 }
-
-func (r *repository) CreateIdentity(ctx context.Context, identity *models.Identity) error {
-	collection := r.store.Database("auth").Collection("identities")
-
-	_, err := collection.InsertOne(context.TODO(), identity)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
