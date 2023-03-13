@@ -1,13 +1,36 @@
-# jamify-service-template
-Base template for creating new services in Jamify
+## Auth Service
 
-Please follow the checklist when creating new services
+### Description
 
-- [x] Create the repo from the template
-- [x] Rename the container name in the `docker-compose.yaml`
-- [x] Change the port exposed in the `Dockerfile`
-- [x] Change the ports in the  `docker-compose.yaml`
-- [x] Change the module in `go.mod` to point to your new service instead of the template
-- [x] Change the prog name in the `Makefile`
-- [x] Change name of package in `.vscode/launch.json`
-- [x] Add branch protection rules to your new repo (require 1 approval, no pushing to main, etc)
+This services handles anything security/auth related. This service will determine what role a user holds, does that user have access to given resources, has their session expired or not, etc.
+
+### Identities
+
+Identities will be used to store information regarding login details and roles. An identity consists of an email address and password. In the future, what role that identity holds.
+
+### Running the service
+
+1. Make init will run `go mod tidy` to clean up and unused packages from the go.mod, and add any that are used to it.
+```shell 
+make init
+```
+
+2. Make platform will spin up any required services for `auth` to run. This includes databases, redis instances, rabbitmq, etc.
+```shell
+make platform
+```
+
+3. Make start and make run will start the service. Make start will spin up the service in a docker container, while make run will simply run the go service locally.
+
+```shell
+make start
+``` 
+or 
+```shell 
+make run
+```
+
+4. Make test (has not been set up yet) will run any go tests that have been written.
+``` shell
+make test
+```
