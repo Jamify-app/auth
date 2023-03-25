@@ -1,14 +1,15 @@
 package repositories
 
 import (
-	"context"
-
 	"github.com/Jamify-app/auth/processes/identities/models"
+	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+//go:generate mockery --name=IRepository --inpackage
 type IRepository interface {
-	CreateIdentity(context.Context, *models.Identity) error
+	CreateIdentity(*gin.Context, *models.Identity) error
+	GetIdentity(*gin.Context, string) (*models.Identity, error)
 }
 
 type repository struct {

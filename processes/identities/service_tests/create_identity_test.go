@@ -1,62 +1,79 @@
 package service_tests
 
 import (
-	"context"
 	"testing"
 
-	"github.com/Jamify-app/auth/mocks"
 	"github.com/Jamify-app/auth/processes/identities/models"
+	"github.com/Jamify-app/auth/processes/identities/repositories"
 	"github.com/Jamify-app/auth/processes/identities/services"
 	"github.com/stretchr/testify/assert"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func TestCreateIdentity(t *testing.T) {
-	ctx := context.Background()
-
 	tt := map[string]struct {
-		give          *models.Identity
-		want          error
-		mockReturn    error
-		shouldSucceed bool
+		give                        *models.Identity
+		want                        error
+		mockReturnCreateIdentityErr error
+		mockReturnGetIdentity       *models.Identity
+		mockReturnGetIdentityErr    error
+		shouldSucceed               bool
 	}{
-		"Should successfully encrypt password and create identity": {
+		"Should successfully encrypt password and create new identity": {
 			give: &models.Identity{
 				Email: "test@test.com",
 				Token: "password1234!",
 			},
-			want:          nil,
-			mockReturn:    nil,
-			shouldSucceed: true,
+			want:                        nil,
+			mockReturnCreateIdentityErr: nil,
+			mockReturnGetIdentity:       nil,
+			mockReturnGetIdentityErr:    mongo.ErrNoDocuments,
+			shouldSucceed:               true,
+		},
+		"Should successfully find existing identity": {
+			give: &models.Identity{
+				Email: "test@test.com",
+				Token: "password1234!",
+			},
+			want:                        nil,
+			mockReturnCreateIdentityErr: nil,
+			mockReturnGetIdentity:       nil,
+			mockReturnGetIdentityErr:    nil,
+			shouldSucceed:               true,
 		},
 		"Should not encrypt password and fail to create identity": {
 			give: &models.Identity{
 				Email: "test@test.com",
 				Token: "",
 			},
-			want:       assert.AnError,
-			mockReturn: nil,
+			want:                        assert.AnError,
+			mockReturnCreateIdentityErr: nil,
 		},
 		"Should successfully encrypt password, but fail to create identity": {
 			give: &models.Identity{
 				Email: "test@test.com",
 				Token: "password1234!",
 			},
-			want:       assert.AnError,
-			mockReturn: assert.AnError,
+			want:                        assert.AnError,
+			mockReturnCreateIdentityErr: assert.AnError,
 		},
 	}
 
 	for name, tc := range tt {
 		t.Run(name, func(t *testing.T) {
-			repo := new(mocks.IRepository)
+			repo := new(repositories.MockIRepository)
 
 			service := services.NewService(repo)
 
 			repo.
-				On("CreateIdentity", ctx, tc.give).
-				Return(tc.mockReturn)
+				On("GetIdentity", nil, tc.give.Email).
+				Return(tc.mockReturnGetIdentity)
 
-			err := service.CreateIdentity(ctx, tc.give)
+			repo.
+				On("CreateIdentity", nil, tc.give).
+				Return(tc.mockReturnCreateIdentityErr)
+
+			_, err := service.CreateIdentity(nil, tc.give)
 
 			if tc.shouldSucceed {
 				assert.Empty(t, err)
