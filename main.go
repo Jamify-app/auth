@@ -7,6 +7,7 @@ import (
 
 	"github.com/Jamify-app/auth/middleware"
 	"github.com/Jamify-app/auth/processes/identities"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
 )
@@ -20,6 +21,7 @@ func main() {
 
 	router := gin.New()
 	router.Use(middleware.StructuredLogger(&log.Logger))
+	router.Use(cors.Default())
 
 	identitiesProcess.Start(ctx, router)
 	defer identitiesProcess.Stop(ctx)

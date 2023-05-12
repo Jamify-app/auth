@@ -1,6 +1,7 @@
 package encryption
 
 import (
+	"bytes"
 	"crypto/rand"
 	"errors"
 	"io"
@@ -25,4 +26,13 @@ func EncryptPassword(password string) ([]byte, []byte, error) {
 	}
 
 	return salt, hash, nil
+}
+
+func IsPasswordSame(password string, hash []byte, salt []byte) (bool, error) {
+	newHash, err := scrypt.Key([]byte(password), salt, 1<<14, 8, 1, 64)
+	if err != nil {
+		return false, err
+	}
+
+	return bytes.Equal(newHash, hash), nil
 }
