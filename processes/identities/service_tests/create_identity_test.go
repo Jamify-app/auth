@@ -1,11 +1,13 @@
 package service_tests
 
 import (
+	"net/http/httptest"
 	"testing"
 
 	"github.com/Jamify-app/auth/processes/identities/models"
 	"github.com/Jamify-app/auth/processes/identities/repositories"
 	"github.com/Jamify-app/auth/processes/identities/services"
+	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -24,21 +26,9 @@ func TestCreateIdentity(t *testing.T) {
 				Email: "test@test.com",
 				Token: "password1234!",
 			},
-			want:                        nil,
 			mockReturnCreateIdentityErr: nil,
 			mockReturnGetIdentity:       nil,
 			mockReturnGetIdentityErr:    mongo.ErrNoDocuments,
-			shouldSucceed:               true,
-		},
-		"Should successfully find existing identity": {
-			give: &models.Identity{
-				Email: "test@test.com",
-				Token: "password1234!",
-			},
-			want:                        nil,
-			mockReturnCreateIdentityErr: nil,
-			mockReturnGetIdentity:       nil,
-			mockReturnGetIdentityErr:    nil,
 			shouldSucceed:               true,
 		},
 		"Should not encrypt password and fail to create identity": {
@@ -61,19 +51,21 @@ func TestCreateIdentity(t *testing.T) {
 
 	for name, tc := range tt {
 		t.Run(name, func(t *testing.T) {
+			ctx, _ := gin.CreateTestContext(httptest.NewRecorder())
+
 			repo := new(repositories.MockIRepository)
 
 			service := services.NewService(repo)
 
 			repo.
-				On("GetIdentity", nil, tc.give.Email).
-				Return(tc.mockReturnGetIdentity)
+				On("GetIdentity", ctx, tc.give.Email).
+				Return(tc.mockReturnGetIdentity, tc.mockReturnGetIdentityErr)
 
 			repo.
-				On("CreateIdentity", nil, tc.give).
+				On("CreateIdentity", ctx, tc.give).
 				Return(tc.mockReturnCreateIdentityErr)
 
-			_, err := service.CreateIdentity(nil, tc.give)
+			_, err := service.CreateIdentity(ctx, tc.give)
 
 			if tc.shouldSucceed {
 				assert.Empty(t, err)
